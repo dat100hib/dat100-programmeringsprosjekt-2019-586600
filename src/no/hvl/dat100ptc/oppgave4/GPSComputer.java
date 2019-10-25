@@ -8,146 +8,207 @@ import no.hvl.dat100ptc.oppgave2.GPSDataFileReader;
 import no.hvl.dat100ptc.oppgave3.GPSUtils;
 
 public class GPSComputer {
+
+public GPSComputer(String filename) {
+	GPSPoint[] gpspoint;
+	GPSDataConverter converter = new GPSDataConverter(GPSData);
+	converter.convert(time, latitude, longitude, elevation);
 	
-	private GPSPoint[] gpspoints;
+	this.time = converter.time;
+	this.latitude = converter.latitude;
+	this.longitude = converter.longitude;
+	this.elevation = converter.elevation;
+}
+
+// tabeller for GPS datapunkter
+public int[] time;
+public double[] latitude;
+public double[] longitude;
+public double elevation;
+
+// beregn total distances (i meter)
+public double totalDistance() {
+
+	double distance = 0;
+
+	// TODO
+	// OPPGAVE - START
 	
-	public GPSComputer(String filename) {
-
-		GPSData gpsdata = GPSDataFileReader.readGPSFile(filename);
-		gpspoints = gpsdata.getGPSPoints();
-
-	}
-
-	public GPSComputer(GPSPoint[] gpspoints) {
-		this.gpspoints = gpspoints;
-	}
-	
-	public GPSPoint[] getGPSPoints() {
-		return this.gpspoints;
-	}
-	
-	// beregn total distances (i meter)
-	public double totalDistance() {
-
-		double distance = 0;
-
-		// TODO - START
-
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO - SLUTT
-
-	}
-
-	// beregn totale høydemeter (i meter)
-	public double totalElevation() {
-
-		double elevation = 0;
-
-		// TODO - START
-
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO - SLUTT
-
-	}
-
-	// beregn total tiden for hele turen (i sekunder)
-	public int totalTime() {
-
-		throw new UnsupportedOperationException(TODO.method());
-
-	}
-		
-	// beregn gjennomsnitshastighets mellom hver av gps punktene
-
-	public double[] speeds() {
-		
-		// TODO - START		// OPPGAVE - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO - SLUTT
-
+	for (int i = 0; i < latitude.length - 1; i++) {
+		distance += GPSUtils.distance(latitude[i], longitude[i], latitude[i+1], longitude[i+1]);
 	}
 	
-	public double maxSpeed() {
-		
-		double maxspeed = 0;
-		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-		
-		// TODO - SLUTT
-		
+	// OPPGAVE - SLUTT
+
+	return distance;
+}
+
+
+
+// beregn totale høydemeter (i meter)
+public double[] totalElevation() {
+
+	// double elevation = 0;
+
+	// TODO
+	// OPPGAVE - START
+	
+	for (int i = 1; i < elevation.length; i++) {
+		if (elevation[i] > elevation [i -1]) {
+			elevation = elevation[i] - elevation [i-1];
+		}
 	}
 
-	public double averageSpeed() {
+	// OPPGAVE - SLUTT
+	return elevation;
+}
 
-		double average = 0;
-		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-		
-		// TODO - SLUTT
+
+// beregn total tiden for hele turen (i sekunder)
+public int totalTime() {
+	
+	int totaltime = 0;
+	
+	// TODO 
+	// OPPGAVE START
+	
+	totaltime = time[time.length - 1] - time[0];
+	
+	// OPPGAVE SLUTT
+	
+	return totaltime;
+}
+
+
+// beregn gjennomsnitshastighets mellom hver av gps punktene
+public double[] speeds() {
+
+	double[] speeds = new double[time.length-1];
+	
+	// TODO
+	// OPPGAVE - START
+	
+	for (int i =0; i < time.length -1; i++) {
+		speeds[i] = GPSUtils.speed(time[i+1] - time[i], latitude[i], longitude[i], latitude[i+1], longitude[i+1]);
+	}
+	
+	// OPPGAVE - SLUTT
+	return speeds;
+}
+
+
+// beregn maximum hastighet km/t
+public double maxSpeed() {
+	
+	double maxspeed = 0;
+	
+	// TODO
+	// OPPGAVE - START
+	
+	double [] speed2 = speeds();
+	for (int i = 0; i < speed2.length -1; i++) {
+		if(maxspeed < speed2[i]) {
+			maxspeed = speed2[i];
+		}
 		
 	}
+			
+	// OPPGAVE - SLUTT
+	
+	return maxspeed;
+}
 
-	/*
-	 * bicycling, <10 mph, leisure, to work or for pleasure 4.0 bicycling,
-	 * general 8.0 bicycling, 10-11.9 mph, leisure, slow, light effort 6.0
-	 * bicycling, 12-13.9 mph, leisure, moderate effort 8.0 bicycling, 14-15.9
-	 * mph, racing or leisure, fast, vigorous effort 10.0 bicycling, 16-19 mph,
-	 * racing/not drafting or >19 mph drafting, very fast, racing general 12.0
-	 * bicycling, >20 mph, racing, not drafting 16.0
-	 */
 
-	// conversion factor m/s to miles per hour
-	public static double MS = 2.236936;
+// beregn gjennomsnittshasitiget for hele turen km/t
+public double averageSpeed() {
 
-	// beregn kcal gitt weight og tid der kjøres med en gitt hastighet
-	public double kcal(double weight, int secs, double speed) {
+	double average = 0;
+	
+	// TODO
+	// OPPGAVE - START
+	
+	average = totalDistance()/ totalTime()*3.6;
+			
+	// OPPGAVE - SLUTT
+	
+	return average;
+}
 
-		double kcal;
 
-		// MET: Metabolic equivalent of task angir (kcal x kg-1 x h-1)
-		double met = 0;		
-		double speedmph = speed * MS;
+// conversion factor kph (km/t) to miles per hour (mph)
+public static double MS = 0.62;
 
-		// TODO - START
+// beregn kcal gitt weight og tid der kjøres med en gitt hastighet
+public double kcal(double weight, int secs, double speed) {
+
+	double kcal = 0;
+
+	// MET: Metabolic equivalent of task angir (kcal x kg-1 x h-1)
+	double met = 0;		
+	double speedmph = speed * MS;
+	
+	if (speedmph < 10 )
+		met = 4;
+		else if (speedmph <=12)
+		met = 6;
+		else if (speedmph <=14)
+			met = 8;
+		else if (speedmph <=15)
+			met = 10;
+		else if (speedmph <=20)
+			met = 12;
+		else if (speedmph > 20)
+			met = 16;
+	
+
+	// TODO
+	// OPPGAVE START
+	
+	kcal = met * weight * secs / 3600; 
+	
+	
+	// Energy Expended (kcal) = MET x Body Weight (kg) x Time (h)
+
+	// OPPGAVE SLUTT
+	
+	return kcal;
+}
+
+public double totalKcal(double weight) {
+
+	double totalkcal = 0;
+	double [] speeds3= speeds();
+
+	// TODO
+	// OPPGAVE - START 
+	for (int i = 0; i < speeds3.length - 1; i++){
+		totalkcal += kcal(weight, time[i + 1] - time[i], speeds3[i]);
 		
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO - SLUTT
-		
-	}
-
-	public double totalKcal(double weight) {
-
-		double totalkcal = 0;
-
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO - SLUTT
 		
 	}
 	
-	private static double WEIGHT = 80.0;
+	// Hint: hent hastigheter i speeds tabellen og tider i timestabellen
+	// disse er definer i toppen av klassen og lese automatisk inn
 	
-	public void displayStatistics() {
+	// OPPGAVE - SLUTT
+	
+	return totalkcal;
+}
 
-		System.out.println("==============================================");
+private static double WEIGHT = 80.0;
 
-		// TODO - START
-
-		throw new UnsupportedOperationException(TODO.method());
-		
-		// TODO - SLUTT
-		
+	// skriv ut statistikk for turen
+public void print() {
+	
+	// TODO
+	// OPPGAVE - START
+			
+	System.out.println("Total Time\t: " + GPSUtils.printTime(totalTime());
+	System.out.printf("Total Distance\t: %.2f\n", totalDistance());
+	System.out.printf("Total Elevation\t: %.2f\n", totalElevation());
+	System.out.printf("Max Speed\t: %.2f\n", maxSpeed());
+	System.out.printf("Average speed\t: %.2f\n", averageSpeed());
+	System.out.printf("Total Kcal\t: %.2f \n", totalKcal(WEIGHT));
+	// OPPGAVE - SLUT
 	}
-
 }
