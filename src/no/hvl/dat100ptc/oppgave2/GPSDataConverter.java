@@ -6,7 +6,7 @@ import no.hvl.dat100ptc.oppgave1.GPSPoint;
 public class GPSDataConverter {
 
 
-	private static int toSeconds(String timestr) {
+	public static int toSeconds(String timestr) {
 		
 		int secs;
 		int hr, min, sec;
@@ -26,15 +26,15 @@ public class GPSDataConverter {
 		
 	}
 
-	public static GPSPoint convert(int[] time2, double[] latitude2, double[] longitude2, double[] elevation2) {
+	public static GPSPoint convert(String timeStr, String latitudeStr, String longitudeStr, String elevationStr) {
 
 		GPSPoint gpspoint;
 
 		// TODO - START ;
-		int time = toSeconds(time2);
-		double latitude = Double.parseDouble(latitude2);
-		double longitude = Double.parseDouble(longitude2);
-		double elevation = Double.parseDouble(elevation2);
+		int time = toSeconds(timeStr);
+		double latitude = Double.parseDouble(latitudeStr);
+		double longitude = Double.parseDouble(longitudeStr);
+		double elevation = Double.parseDouble(elevationStr);
 		
 		gpspoint = new GPSPoint(time, latitude, longitude, elevation);
 		

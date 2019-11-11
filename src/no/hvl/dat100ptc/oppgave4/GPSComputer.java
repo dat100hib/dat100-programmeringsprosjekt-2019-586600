@@ -9,17 +9,18 @@ import no.hvl.dat100ptc.oppgave3.GPSUtils;
 
 public class GPSComputer {
 
-public GPSComputer(String filename) {
-	GPSPoint[] gpspoint;
-	GPSDataConverter converter = new GPSDataConverter(GPSData);
-	converter.convert(time, latitude, longitude, elevation);
+	private GPSPoint[] gpspoints;
 	
-	this.time = converter.time;
-	this.latitude = converter.latitude;
-	this.longitude = converter.longitude;
-	this.elevation = converter.elevation;
-}
+public GPSComputer(String filename) {
+	
+		GPSData gpsdata = GPSDataFileReader.readGPSFile(filename);
+		gpspoints = gpsdata.getGPSPoints();
 
+	}
+
+public GPSComputer(GPSPoint[] gpspoints) {
+	this.gpspoints = gpspoints;
+}
 // tabeller for GPS datapunkter
 public int[] time;
 public double[] latitude;
@@ -34,8 +35,8 @@ public double totalDistance() {
 	// TODO
 	// OPPGAVE - START
 	
-	for (int i = 0; i < latitude.length - 1; i++) {
-		distance += GPSUtils.distance(latitude[i], longitude[i], latitude[i+1], longitude[i+1]);
+	for (int i = 0; i < gpspoints.length - 1; i++) {
+		distance += GPSUtils.distance(gpspoints[i], gpspoints[i+1]);
 	}
 	
 	// OPPGAVE - SLUTT
@@ -46,19 +47,19 @@ public double totalDistance() {
 
 
 // beregn totale høydemeter (i meter)
-public double[] totalElevation() {
+public double totalElevation() {
 
-	// double elevation = 0;
+	double elevation = 0;
 
 	// TODO
 	// OPPGAVE - START
-	
+	/*
 	for (int i = 1; i < elevation.length; i++) {
 		if (elevation[i] > elevation [i -1]) {
 			elevation = elevation[i] - elevation [i-1];
 		}
 	}
-
+*/
 	// OPPGAVE - SLUTT
 	return elevation;
 }
@@ -83,13 +84,13 @@ public int totalTime() {
 // beregn gjennomsnitshastighets mellom hver av gps punktene
 public double[] speeds() {
 
-	double[] speeds = new double[time.length-1];
+	double[] speeds = new double[gpspoints.length-1];
 	
 	// TODO
 	// OPPGAVE - START
 	
-	for (int i =0; i < time.length -1; i++) {
-		speeds[i] = GPSUtils.speed(time[i+1] - time[i], latitude[i], longitude[i], latitude[i+1], longitude[i+1]);
+	for (int i =0; i < gpspoints.length -1; i++) {
+		speeds[i] = GPSUtils.speed(gpspoints[i],gpspoints[i+1]);
 	}
 	
 	// OPPGAVE - SLUTT
@@ -198,12 +199,12 @@ public double totalKcal(double weight) {
 private static double WEIGHT = 80.0;
 
 	// skriv ut statistikk for turen
-public void print() {
+public void displayStatistics() {
 	
 	// TODO
 	// OPPGAVE - START
 			
-	System.out.println("Total Time\t: " + GPSUtils.printTime(totalTime());
+	System.out.println("Total Time\t: " + GPSUtils.formatTime(totalTime()));
 	System.out.printf("Total Distance\t: %.2f\n", totalDistance());
 	System.out.printf("Total Elevation\t: %.2f\n", totalElevation());
 	System.out.printf("Max Speed\t: %.2f\n", maxSpeed());

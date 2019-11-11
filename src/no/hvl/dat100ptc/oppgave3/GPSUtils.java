@@ -80,9 +80,14 @@ public class GPSUtils {
 
 	private static int R = 6371000; // jordens radius
 
-	// public static double distance(GPSPoint gpspoint1, GPSPoint gpspoint2) {
+	public static double distance(GPSPoint gpspoint1, GPSPoint gpspoint2) {
 	
-		public static double distance(double latitude1, double longitude1, double latitude2, double longitude2) {
+		double latitude1 = gpspoint1.getLatitude();
+		double longitude1 = gpspoint1.getLongitude();
+		
+		double latitude2 = gpspoint2.getLatitude();
+		double longitude2 = gpspoint2.getLongitude();
+		
 
 			double a, c, d;
 
@@ -112,19 +117,24 @@ public class GPSUtils {
 	}
 
 
-	public static double speed(int secs, double latitude1, double longitude1, double latitude2, double longitude2) {
+	public static double speed(GPSPoint gpspoint1, GPSPoint gpspoint2) {
 
-			double speed = 0.0;
+		int secs;
+		double speed;
 
-			// TODO - START
+		// TODO - START
 
-			speed = distance(latitude1,longitude1,latitude2, longitude2) / secs * 3.6; 
-			
-			// TODO - SLUTT
-			
-			return speed;
+		secs = gpspoint2.getTime() - gpspoint1.getTime();
 
+		// m/s
+		speed = distance(gpspoint1, gpspoint2) / secs;
 
+		// km/t
+		speed = (speed * 60 * 60) / 1000;
+
+		// TODO - SLUTT
+
+		return speed;
 	}
 
 	public static String formatTime(int secs) {
